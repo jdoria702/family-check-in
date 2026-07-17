@@ -1,6 +1,24 @@
 import { createClient } from "@supabase/supabase-js";
 
+/*
+  Creates object that can communicate with:
+    - Supabase Auth
+    - Supabase database APIs
+    - Supabase storage and other services
+*/
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabasePublishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+
+if (!supabaseUrl) {
+  throw new Error("Missing NEXT_PUBLIC_SUPABASE_URL environment variable");
+}
+
+if (!supabasePublishableKey) {
+  throw new Error("Missing NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY environment variable");
+}
+
 export const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+  supabaseUrl,
+  supabasePublishableKey
+)
