@@ -40,4 +40,17 @@ export const registerSchema = z.object({
   password: passwordSchema,
 });
 
+export const signInSchema = z.object({
+  email: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .email({ message: "Invalid email address" }),
+
+  password: z
+    .string()
+    .min(1, { message: "Password is required" }),
+});
+
 export type RegisterInput = z.infer<typeof registerSchema>;
+export type SignInInput = z.infer<typeof signInSchema>;
