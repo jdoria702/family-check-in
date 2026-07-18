@@ -1,24 +1,37 @@
-import { createClient } from "@supabase/supabase-js";
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
 
 /*
-  Creates object that can communicate with:
-    - Supabase Auth
-    - Supabase database APIs
-    - Supabase storage and other services
+  Server client needs access to the cookies for the current request
+  Contains what the browser's incoming cookies are
+  Writes what outgoing cookies should be written
 */
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabasePublishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+export async function createClient() {
+  const cookieStore = await cookies();
 
-if (!supabaseUrl) {
-  throw new Error("Missing NEXT_PUBLIC_SUPABASE_URL environment variable");
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+
+        setAll(cookiesToSet) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) => {
+              cookieStore.set(name, value, options);
+            })
+          } catch {
+            /*
+              catch runs in Server Component where cookies cannot be modified
+              route handlers and server actions can write them
+            */
+          }
+        }
+      }
+    }
+  )
 }
-
-if (!supabasePublishableKey) {
-  throw new Error("Missing NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY environment variable");
-}
-
-export const supabase = createClient(
-  supabaseUrl,
-  supabasePublishableKey
-)
