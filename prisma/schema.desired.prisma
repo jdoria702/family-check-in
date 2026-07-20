@@ -43,9 +43,10 @@ model AuthUser {
 model Profile {
   id        String   @id @db.Uuid
   name      String
+  email     String   @unique
   phone     String?  @unique
   createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   user AuthUser @relation(fields: [id], references: [id], onDelete: Cascade)
 

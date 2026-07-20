@@ -1,7 +1,6 @@
 import { supabase } from "@/lib/supabase/browser";
 import { SupabaseClient } from "@supabase/supabase-js";
-import type { RegisterInput } from "./auth-schema";
-import type { SignInInput } from "./auth-schema";
+import type { RegisterInput, SignInInput } from "./auth-schema";
 
 /*
     Responsible for registering a new user.
@@ -11,13 +10,13 @@ import type { SignInInput } from "./auth-schema";
     Accepts validated input from the SignInInput schema and returns a SignInResult object.
 */
 
-export type RegisterResult = {
+type RegisterResult = {
     userId: string;
     email: string | null;
     requiresEmailConfirmation: boolean;
 };
 
-export type SignInResult = {
+type SignInResult = {
     userId: string;
     email: string;
 };

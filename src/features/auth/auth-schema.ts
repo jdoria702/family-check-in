@@ -1,9 +1,5 @@
 import { z } from "zod";
 
-/*
-    Validates and returns normalizes data
-*/
-
 const nameSchema = z
   .string()
   .trim()
@@ -11,46 +7,59 @@ const nameSchema = z
     message:
       "Name can only contain letters, single spaces, apostrophes, and hyphens",
   })
-  .refine((name) => name.replaceAll(" ", "").length >= 2, {
-    message: "Name must contain at least 2 characters, excluding spaces",
-  });
+  .refine(
+    (name) => name.replaceAll(" ", "").length >= 2,
+    {
+      message:
+        "Name must contain at least 2 characters, excluding spaces",
+    }
+  );
 
 const emailSchema = z
   .string()
   .trim()
   .toLowerCase()
-  .email({ message: "Invalid email address" });
+  .email({
+    message: "Invalid email address",
+  });
 
-const passwordSchema = z
+const registrationPasswordSchema = z
   .string()
-  .min(8, { message: "Password must be at least 8 characters long" })
+  .min(8, {
+    message: "Password must be at least 8 characters long",
+  })
   .regex(/[A-Z]/, {
-    message: "Password must contain at least one uppercase letter",
+    message:
+      "Password must contain at least one uppercase letter",
   })
   .regex(/[a-z]/, {
-    message: "Password must contain at least one lowercase letter",
+    message:
+      "Password must contain at least one lowercase letter",
   })
   .regex(/[^A-Za-z0-9]/, {
-    message: "Password must contain at least one special character",
+    message:
+      "Password must contain at least one special character",
+  });
+
+const signInPasswordSchema = z
+  .string()
+  .min(1, {
+    message: "Password is required",
   });
 
 export const registerSchema = z.object({
   name: nameSchema,
   email: emailSchema,
-  password: passwordSchema,
+  password: registrationPasswordSchema,
 });
 
 export const signInSchema = z.object({
-  email: z
-    .string()
-    .trim()
-    .toLowerCase()
-    .email({ message: "Invalid email address" }),
-
-  password: z
-    .string()
-    .min(1, { message: "Password is required" }),
+  email: emailSchema,
+  password: signInPasswordSchema,
 });
 
-export type RegisterInput = z.infer<typeof registerSchema>;
-export type SignInInput = z.infer<typeof signInSchema>;
+export type RegisterInput =
+  z.infer<typeof registerSchema>;
+
+export type SignInInput =
+  z.infer<typeof signInSchema>;
