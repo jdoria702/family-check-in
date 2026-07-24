@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma"
-import type { InvitationCodeInput } from "./care.schemas";
+import type { InvitationCodeInput } from "./care.schema";
 import crypto from "node:crypto";
 
 function generateInvitationCode(): string {

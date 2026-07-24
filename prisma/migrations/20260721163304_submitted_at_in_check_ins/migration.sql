@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "check_ins" ADD COLUMN     "submitted_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;

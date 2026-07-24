@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
-import { claimInvitation, createInvitation, previewInvitation } from "@/features/care/care-service";
+import { claimInvitation, createInvitation, previewInvitation } from "@/features/invitation/care-service";
 import { NextResponse } from "next/server";
-import { invitationCodeSchema } from "@/features/care/care.schemas";
+import { invitationCodeSchema } from "@/features/invitation/care.schema";
 
 /*
     Create invitation
