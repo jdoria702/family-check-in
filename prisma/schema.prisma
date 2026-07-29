@@ -41,11 +41,12 @@ model AuthUser {
 }
 
 model Profile {
-  id        String   @id @db.Uuid
+  id        String    @id @db.Uuid
   name      String
-  phone     String?  @unique
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+  phone     String?   @unique
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @default(now()) @updatedAt @map("updated_at")
+  checkIns  CheckIn[]
 
   user AuthUser @relation(fields: [id], references: [id], onDelete: Cascade)
 
@@ -82,7 +83,7 @@ model CareAccessPeriod {
   id             String           @id @default(uuid()) @db.Uuid
   relationshipId String           @map("relationship_id") @db.Uuid
   status         CareAccessStatus @default(PENDING_CARETAKER)
-  startedAt      DateTime?        @map("started_at")
+  startedAt      DateTime         @default(now()) @map("started_at")
   endedAt        DateTime?        @map("ended_at")
   endedById      String?          @map("ended_by_id") @db.Uuid
   createdAt      DateTime         @default(now()) @map("created_at")
@@ -113,5 +114,19 @@ model CareInvitation {
   @@index([caretakerId, status])
   @@index([expiresAt])
   @@map("care_invitations")
+  @@schema("public")
+}
+
+model CheckIn {
+  id             String   @id @default(uuid()) @db.Uuid
+  memberId       String   @db.Uuid
+  generalFeeling Int
+  notes          String?
+  submittedAt    DateTime @default(now()) @map("submitted_at")
+
+  member Profile @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@index([memberId])
+  @@map("check_ins")
   @@schema("public")
 }

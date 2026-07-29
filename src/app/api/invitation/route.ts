@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
-import { claimInvitation, createInvitation, previewInvitation } from "@/features/care/care-service";
+import { claimInvitation, createInvitation, previewInvitation } from "@/features/invitation/care-service";
 import { NextResponse } from "next/server";
-import { invitationCodeSchema } from "@/features/care/care.schemas";
+import { invitationCodeSchema } from "@/features/invitation/care.schema";
 
 /*
     Create invitation
@@ -87,15 +87,20 @@ export async function GET(request: Request) {
         })
 
         return NextResponse.json(result)
-    } catch {
+    } catch (error) {
+        console.error("Failed to preview invitation:", error);
+
         return NextResponse.json(
             {
-                error: "Internal server error"
+            error:
+                error instanceof Error
+                ? error.message
+                : "Internal server error",
             },
             {
-                status: 500
+            status: 500,
             }
-        )
+        );
     }
 }
 
@@ -146,14 +151,19 @@ export async function PATCH(request: Request) {
         })
 
         return NextResponse.json(result)
-    } catch {
+    } catch (error) {
+        console.error("Failed to claim invitation:", error);
+
         return NextResponse.json(
             {
-                error: "Internal server error"
+            error:
+                error instanceof Error
+                ? error.message
+                : "Internal server error",
             },
             {
-                status: 500
+            status: 500,
             }
-        )
+        );
     }
 }
