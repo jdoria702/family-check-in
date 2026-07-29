@@ -1,5 +1,7 @@
 import { registerSchema } from "@/features/auth/auth-schema";
 import { registerUser } from "@/features/auth/auth-service";
+import { createClient } from "@/lib/supabase/server"
+import { NextResponse } from "next/server";
 
 /*
   Handles user registration requests
@@ -39,6 +41,24 @@ export async function POST(request: Request) {
   }
 
   try {
+
+      // Remove any existing browser session before registering another user.
+      const supabase = await createClient()
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+
+      if (currentUser) {
+        const { error: signOutError } = await supabase.auth.signOut();
+
+        if (signOutError) {
+          return NextResponse.json(
+            { error: "Unable to clear the existing session." },
+            { status: 500 }
+          );
+        }
+      }
+
+
+
     const result = await registerUser(validation.data);
 
     return Response.json(

@@ -5,16 +5,21 @@ import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { HeartPulse, LoaderCircle } from "lucide-react";
 
-type SignInErrorResponse = {
+type RegisterErrorResponse = {
   error?: string;
   message?: string;
+  issues?: Array<{
+    message?: string;
+  }>;
 };
 
-export default function SignInPage() {
+export default function RegisterPage() {
   const router = useRouter();
 
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordConfirmation, setPasswordConfirmation] = useState("");
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -27,25 +32,37 @@ export default function SignInPage() {
     }
 
     setErrorMessage(null);
+
+    if (password !== passwordConfirmation) {
+      setErrorMessage("Passwords do not match.");
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("/api/auth/sign-in", {
+      const response = await fetch("/api/auth/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          name,
           email,
           password,
         }),
       });
 
-      const data = (await response.json()) as SignInErrorResponse;
+      const data = (await response.json()) as RegisterErrorResponse;
 
       if (!response.ok) {
+        const validationMessage = data.issues?.[0]?.message;
+
         throw new Error(
-          data.error ?? data.message ?? "Unable to sign in."
+          validationMessage ??
+            data.error ??
+            data.message ??
+            "Unable to create your account."
         );
       }
 
@@ -82,15 +99,39 @@ export default function SignInPage() {
           <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
             <div className="mb-8 text-center">
               <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-                Welcome back
+                Create your account
               </h1>
 
               <p className="mt-2 text-sm leading-6 text-slate-600">
-                Log in to view your family dashboard and check-ins.
+                Start completing check-ins and staying connected with your
+                family.
               </p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-5">
+              <div>
+                <label
+                  htmlFor="name"
+                  className="mb-2 block text-sm font-medium text-slate-700"
+                >
+                  Full name
+                </label>
+
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  autoComplete="name"
+                  required
+                  minLength={2}
+                  value={name}
+                  onChange={(event) => setName(event.target.value)}
+                  placeholder="Jason Doria"
+                  disabled={isSubmitting}
+                  className="min-h-12 w-full rounded-xl border border-slate-300 bg-white px-4 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 disabled:cursor-not-allowed disabled:bg-slate-100"
+                />
+              </div>
+
               <div>
                 <label
                   htmlFor="email"
@@ -114,24 +155,53 @@ export default function SignInPage() {
               </div>
 
               <div>
-                <div className="mb-2 flex items-center justify-between">
-                  <label
-                    htmlFor="password"
-                    className="block text-sm font-medium text-slate-700"
-                  >
-                    Password
-                  </label>
-                </div>
+                <label
+                  htmlFor="password"
+                  className="mb-2 block text-sm font-medium text-slate-700"
+                >
+                  Password
+                </label>
 
                 <input
                   id="password"
                   name="password"
                   type="password"
-                  autoComplete="current-password"
+                  autoComplete="new-password"
                   required
+                  minLength={8}
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
-                  placeholder="Enter your password"
+                  placeholder="Create a password"
+                  disabled={isSubmitting}
+                  className="min-h-12 w-full rounded-xl border border-slate-300 bg-white px-4 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 disabled:cursor-not-allowed disabled:bg-slate-100"
+                />
+
+                <p className="mt-2 text-xs leading-5 text-slate-500">
+                  Use at least 8 characters, including uppercase, lowercase,
+                  and a special character.
+                </p>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="password-confirmation"
+                  className="mb-2 block text-sm font-medium text-slate-700"
+                >
+                  Confirm password
+                </label>
+
+                <input
+                  id="password-confirmation"
+                  name="passwordConfirmation"
+                  type="password"
+                  autoComplete="new-password"
+                  required
+                  minLength={8}
+                  value={passwordConfirmation}
+                  onChange={(event) =>
+                    setPasswordConfirmation(event.target.value)
+                  }
+                  placeholder="Enter your password again"
                   disabled={isSubmitting}
                   className="min-h-12 w-full rounded-xl border border-slate-300 bg-white px-4 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 disabled:cursor-not-allowed disabled:bg-slate-100"
                 />
@@ -157,21 +227,21 @@ export default function SignInPage() {
                       className="h-5 w-5 animate-spin"
                       aria-hidden="true"
                     />
-                    Logging in...
+                    Creating account...
                   </>
                 ) : (
-                  "Log In"
+                  "Create Account"
                 )}
               </button>
             </form>
 
             <p className="mt-6 text-center text-sm text-slate-600">
-              Do not have an account?{" "}
+              Already have an account?{" "}
               <Link
-                href="/register"
+                href="/sign-in"
                 className="font-semibold text-blue-600 hover:text-blue-700"
               >
-                Create an account
+                Log in
               </Link>
             </p>
           </div>
