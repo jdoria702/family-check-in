@@ -1,36 +1,36 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Welcome to Family Check-in
+Stay connected with close family members from wherever you are by sending check-ins to let your close circle know how you are doing
 
-## Getting Started
+<img width="1831" height="899" alt="image" src="https://github.com/user-attachments/assets/966a447f-3187-4ac3-b612-e3ef71957173" />
 
-First, run the development server:
+# Invite Members in your Care
+As a caretaker, you can invite members in your care to view their daily check-ins
+- Create an invitation code with "Invite Member" button located top-right of screen
+- Copy and Share code to member
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+<img width="200" height="72" alt="image" src="https://github.com/user-attachments/assets/24ebd642-f073-4eaf-80a6-8b8745144faf" />
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+# Preview and accept invitation
+As a member joining in a caretakers care, you can preview the invitation from the code and accept it
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+<img width="168" height="54" alt="image" src="https://github.com/user-attachments/assets/224aa2b2-ee14-48c9-94af-bee602cc222b" />
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Preview
 
-## Learn More
+<img width="463" height="719" alt="image" src="https://github.com/user-attachments/assets/3e2d5426-6f64-4b82-acd0-c42ed7fd9219" />
 
-To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# Log your daily check-ins
+Your check-ins will be available to view by caretakers
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+<img width="1247" height="527" alt="image" src="https://github.com/user-attachments/assets/adf3c8ff-0931-45c8-b3a2-4df525580c15" />
 
-## Deploy on Vercel
+# View check-ins
+Caretakers can view check-ins by all members in their care
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+<img width="1284" height="558" alt="image" src="https://github.com/user-attachments/assets/98c99805-4189-4342-80f3-ba49b8bb76d9" />
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# View History of check-ins
+Caretakers can see check-in history of selected member in their care
+
+<img width="1021" height="778" alt="image" src="https://github.com/user-attachments/assets/93f82cec-e7f5-40a5-8d03-1db1b6bbc2c8" />
