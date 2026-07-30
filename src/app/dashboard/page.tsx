@@ -19,6 +19,7 @@ import {
   Users,
   X,
 } from "lucide-react";
+import { LogoutButton } from "@/components/auth/logout-button";
 import { useRouter } from "next/navigation";
 
 type LatestCheckIn = {
@@ -1110,12 +1111,7 @@ function DashboardHeader() {
             Dashboard
           </Link>
 
-          <Link
-            href="/profile"
-            className="text-sm font-medium text-slate-600 transition hover:text-slate-900"
-          >
-            Profile
-          </Link>
+          <LogoutButton />
         </nav>
       </div>
     </header>

@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabase/browser";
 import { SupabaseClient } from "@supabase/supabase-js";
+import { createClient } from "@/lib/supabase/server";
 import type { RegisterInput, SignInInput } from "./auth-schema";
 
 /*
@@ -19,6 +20,13 @@ type RegisterResult = {
 type SignInResult = {
     userId: string;
     email: string;
+};
+
+type SignOutResult = {
+      success: true;
+} | {
+      success: false;
+      error: string;
 };
 
 export async function registerUser(input: RegisterInput): Promise<RegisterResult> {
@@ -65,5 +73,22 @@ export async function signInUser(supabase: SupabaseClient, input: SignInInput): 
     return {
         userId: data.user.id,
         email: data.user.email ?? input.email,
+    }
+}
+
+export async function signOutUser(): Promise<SignOutResult> {
+    const supabase = await createClient();
+
+    const { error } = await supabase.auth.signOut();
+
+    if (error) {
+        return {
+            success: false,
+            error: error.message,
+        };
+    }
+
+    return {
+        success: true
     }
 }
