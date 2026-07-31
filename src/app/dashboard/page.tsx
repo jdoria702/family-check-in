@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useCallback, useEffect, useState } from "react";
 import {
   AlertCircle,
   Check,
@@ -104,39 +104,78 @@ export default function CaretakerDashboardPage() {
   const [createdInvitation, setCreatedInvitation] = useState<CreatedInvitation | null>(null);
   const [isCreatingInvitation, setIsCreatingInvitation] = useState(false);
   const [isJoinInvitationOpen, setIsJoinInvitationOpen] = useState(false);
+  const [invitationError, setInvitationError] = useState<string | null>(null);
+  const router = useRouter();
 
-const [invitationError, setInvitationError] =
-  useState<string | null>(null);
-  const router = useRouter;
-
-  async function loadDashboard(options?: { refresh?: boolean }) {
-    if (options?.refresh) {
-      setIsRefreshing(true);
-    } else {
-      setIsLoading(true);
-    }
-
-    setErrorMessage(null);
-
-    try {
-      const response = await fetch("api/care/members", {
+  const fetchDashboard = useCallback(
+    async (signal?: AbortSignal): Promise<DashboardMember[]> => {
+      const response = await fetch("/api/care/members", {
         method: "GET",
         credentials: "include",
         cache: "no-store",
+        signal,
       });
 
       if (response.status === 401) {
         router.replace("/sign-in");
-        return;
+        return [];
       }
 
       const data = (await response.json()) as DashboardResponse;
 
       if (!response.ok) {
-        throw new Error(data.error ?? "Unable to load the dashboard.");
+        throw new Error(
+          data.error ?? "Unable to load the dashboard."
+        );
       }
 
-      setMembers(data.members ?? []);
+      return data.members ?? [];
+    },
+    [router]
+  );
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    fetchDashboard(controller.signal)
+      .then((dashboardMembers) => {
+        if (!controller.signal.aborted) {
+          setMembers(dashboardMembers);
+        }
+      })
+      .catch((error: unknown) => {
+        if (controller.signal.aborted) {
+          return;
+        }
+
+        setErrorMessage(
+          error instanceof Error
+            ? error.message
+            : "An unexpected error occurred."
+        );
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) {
+          setIsLoading(false);
+        }
+      });
+
+    return () => {
+      controller.abort();
+    };
+  }, [fetchDashboard]);
+
+  async function handleRefresh() {
+    if (isRefreshing) {
+      return;
+    }
+
+    setIsRefreshing(true);
+    setErrorMessage(null);
+
+    try {
+      const dashboardMembers = await fetchDashboard();
+      setMembers(dashboardMembers);
     } catch (error) {
       setErrorMessage(
         error instanceof Error
@@ -144,14 +183,9 @@ const [invitationError, setInvitationError] =
           : "An unexpected error occurred."
       );
     } finally {
-      setIsLoading(false);
       setIsRefreshing(false);
     }
   }
-
-  useEffect(() => {
-    void loadDashboard();
-  }, []);
 
   const completedCount = members.filter(
     (member) => member.checkedInToday
@@ -168,7 +202,7 @@ const [invitationError, setInvitationError] =
     setInvitationError(null);
 
     try {
-      const response = await fetch("api/invitation", {
+      const response = await fetch("/api/invitation", {
         method: "POST",
         credentials: "include",
         cache: "no-store",
@@ -232,7 +266,7 @@ const [invitationError, setInvitationError] =
           <div className="flex flex-col gap-3 sm:flex-row">
             <button
               type="button"
-              onClick={() => void loadDashboard({ refresh: true })}
+              onClick={handleRefresh}
               disabled={isRefreshing}
               className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
             >
@@ -324,7 +358,7 @@ const [invitationError, setInvitationError] =
           {!isLoading && errorMessage && (
             <DashboardErrorState
               message={errorMessage}
-              onRetry={() => void loadDashboard()}
+              onRetry={() => void handleRefresh()}
             />
           )}
 
@@ -357,7 +391,7 @@ const [invitationError, setInvitationError] =
           onClose={() => setIsJoinInvitationOpen(false)}
           onClaimed={() => {
             setIsJoinInvitationOpen(false);
-            void loadDashboard({ refresh: true });
+            void handleRefresh();
           }}
         />
       )}

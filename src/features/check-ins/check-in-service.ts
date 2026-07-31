@@ -1,5 +1,11 @@
 import { prisma } from "@/lib/prisma"
-import type { CreateCheckInServiceInput } from "./check-in-schema"
+
+type CreateCheckInInput = {
+    memberId: string;
+    generalFeeling: number;
+    notes: string | null
+
+}
 
 type GetCaretakerDashboardInput = {
     caretakerId: string;
@@ -25,7 +31,7 @@ type MemberHistoryResult = {
     }[];
 }
 
-export async function createCheckIn(input: CreateCheckInServiceInput) {
+export async function createCheckIn(input: CreateCheckInInput) {
     return prisma.checkIn.create({
         data: {
             memberId: input.memberId,
