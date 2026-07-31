@@ -47,7 +47,7 @@ export async function POST(request: Request) {
 
         const result = await createCheckIn({
             generalFeeling,
-            notes: notes,
+            notes: notes ?? null,
             memberId: user.id
         })
 
