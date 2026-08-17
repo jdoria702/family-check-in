@@ -2,6 +2,11 @@ resource "google_cloud_run_v2_service" "family" {
   name     = "family-wellness"
   location = var.region
 
+  labels = {
+    environment = "production"
+    managed_by  = "terraform"
+  }
+
   template {
     containers {
       image = "us-west1-docker.pkg.dev/family-wellness-504304/family-wellness/family-wellness@sha256:d6b7f22f84aa24ab4bc8e97f4c0875bd0d00b8b4a6eebcaee7cd49d7f0e7684e"
