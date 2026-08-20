@@ -311,6 +311,12 @@ export default function CaretakerDashboardPage() {
                   Invite Member
                 </>
               )}
+
+              {invitationError && (
+                <p role="alert" className="text-sm text-red-600">
+                  {invitationError}
+                </p>
+              )}
             </button>
           </div>
         </section>
