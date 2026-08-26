@@ -56,6 +56,9 @@ model Profile {
   claimedInvitations     CareInvitation[]   @relation("InvitationClaimant")
   endedAccessPeriods     CareAccessPeriod[] @relation("EndedAccessPeriods")
 
+  reminderPreference ReminderPreference?
+  reminderDeliveries ReminderDelivery[]
+
   @@map("profiles")
   @@schema("public")
 }
@@ -128,5 +131,43 @@ model CheckIn {
 
   @@index([memberId])
   @@map("check_ins")
+  @@schema("public")
+}
+
+model ReminderDelivery {
+  id           String                 @id @default(uuid())
+  memberId     String                 @db.Uuid
+  reminderDate DateTime               @db.Date
+  status       ReminderDeliveryStatus
+  sentAt       DateTime?
+  errorMessage String?
+  createdAt    DateTime               @default(now())
+
+  member Profile @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@unique([memberId, reminderDate])
+  @@schema("public")
+}
+
+enum ReminderDeliveryStatus {
+  PENDING
+  SENT
+  FAILED
+
+  @@schema("public")
+}
+
+model ReminderPreference {
+  id            String   @id @default(uuid()) @db.Uuid
+  memberId      String   @unique @db.Uuid
+  enabled       Boolean  @default(true)
+  reminderEmail String
+  reminderTime  String
+  timeZone      String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  member Profile @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
   @@schema("public")
 }
